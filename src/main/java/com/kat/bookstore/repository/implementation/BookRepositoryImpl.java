@@ -3,7 +3,6 @@ package com.kat.bookstore.repository.implementation;
 import com.kat.bookstore.entity.Book;
 import com.kat.bookstore.repository.BookRepository;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
