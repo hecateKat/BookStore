@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class BookRepositoryImpl implements BookRepository {
-
     private final SessionFactory sessionFactory;
 
     public BookRepositoryImpl(SessionFactory sessionFactory) {
@@ -30,7 +29,9 @@ public class BookRepositoryImpl implements BookRepository {
             if (transaction != null) {
                 transaction.rollback();
             }
-            throw new RuntimeException("Can't save book");
+            String errorMessage = String.format("Can't save book: Title='%s', author='%s'",
+                    book.getTitle(), book.getAuthor());
+            throw new RuntimeException(errorMessage, e);
         } finally {
             if (session != null) {
                 session.close();
@@ -41,7 +42,8 @@ public class BookRepositoryImpl implements BookRepository {
 
     @Override
     public List<Book> findAll() {
-        Session session = sessionFactory.openSession();
-        return session.createQuery("select b from Book b", Book.class).getResultList();
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery("select b from Book b", Book.class).getResultList();
+        }
     }
 }
