@@ -1,10 +1,13 @@
 package com.kat.bookstore.service;
 
-import com.kat.bookstore.entity.Book;
+import com.kat.bookstore.dto.BookDto;
+import com.kat.bookstore.dto.CreateBookRequestDto;
 import java.util.List;
 
 public interface BookService {
-    Book save(Book book);
+    BookDto save(CreateBookRequestDto createBookRequestDto);
 
-    List<Book> findAll();
+    List<BookDto> findAll();
+
+    BookDto findById(Long id);
 }
