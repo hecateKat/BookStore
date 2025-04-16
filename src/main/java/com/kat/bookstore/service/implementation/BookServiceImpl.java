@@ -1,15 +1,18 @@
 package com.kat.bookstore.service.implementation;
 
 import com.kat.bookstore.dto.BookDto;
+import com.kat.bookstore.dto.BookSearchParametersDto;
 import com.kat.bookstore.dto.CreateBookRequestDto;
 import com.kat.bookstore.entity.Book;
 import com.kat.bookstore.exception.EntityNotFoundException;
 import com.kat.bookstore.mapper.BookMapper;
-import com.kat.bookstore.repository.BookRepository;
+import com.kat.bookstore.repository.book.BookRepository;
+import com.kat.bookstore.repository.book.BookSpecificationBuilder;
 import com.kat.bookstore.service.BookService;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Service;
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
+    private final BookSpecificationBuilder bookSpecificationBuilder;
 
     @Override
     public BookDto save(CreateBookRequestDto createBookRequestDto) {
@@ -46,6 +50,13 @@ public class BookServiceImpl implements BookService {
         updatedBook.setId(oldBook.getId());
         Book savedBook = bookRepository.save(updatedBook);
         return bookMapper.mapToDto(savedBook);
+    }
+
+    @Override
+    public List<BookDto> search(BookSearchParametersDto searchParams) {
+        Specification<Book> bookSpecification = bookSpecificationBuilder.build(searchParams);
+        return bookRepository.findAll(bookSpecification).stream()
+                .map(bookMapper::mapToDto).collect(Collectors.toList());
     }
 
     @Override

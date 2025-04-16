@@ -1,6 +1,7 @@
 package com.kat.bookstore.controller;
 
 import com.kat.bookstore.dto.BookDto;
+import com.kat.bookstore.dto.BookSearchParametersDto;
 import com.kat.bookstore.dto.CreateBookRequestDto;
 import com.kat.bookstore.service.BookService;
 import java.util.List;
@@ -41,6 +42,11 @@ public class BookController {
     public BookDto updateBookById(@PathVariable Long id,
                                   @RequestBody CreateBookRequestDto createBookRequestDto) {
         return bookService.update(id, createBookRequestDto);
+    }
+
+    @GetMapping("/search")
+    public List<BookDto> searchBooks(BookSearchParametersDto searchParams) {
+        return bookService.search(searchParams);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
