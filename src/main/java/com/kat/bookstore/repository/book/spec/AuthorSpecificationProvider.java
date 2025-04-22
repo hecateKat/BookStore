@@ -12,10 +12,12 @@ public class AuthorSpecificationProvider implements SpecificationProvider<Book> 
         return "author";
     }
 
+    @Override
     public Specification<Book> getSpecification(String[] params) {
         return (root, query, criteriaBuilder) -> {
-            if (params != null && params.length > 0) {
-                query.where(criteriaBuilder.equal(root.get("author"), params[0]));
+            if (params != null && params.length > 0 && params[0] != null) {
+                String pattern = "%" + params[0] + "%";
+                query.where(criteriaBuilder.like(root.get("author"), pattern));
             }
             return query.getRestriction();
         };
