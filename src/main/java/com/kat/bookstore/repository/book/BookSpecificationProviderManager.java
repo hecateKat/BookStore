@@ -1,7 +1,7 @@
 package com.kat.bookstore.repository.book;
 
 import com.kat.bookstore.entity.Book;
-import com.kat.bookstore.exception.NoSuchElementException;
+import com.kat.bookstore.exception.SpecificationNotFoundException;
 import com.kat.bookstore.repository.SpecificationProvider;
 import com.kat.bookstore.repository.SpecificationProviderManager;
 import java.util.List;
@@ -23,7 +23,8 @@ public class BookSpecificationProviderManager implements SpecificationProviderMa
                 .filter(spec -> spec.getKey().equals(key))
                 .findFirst()
                 .orElseThrow(
-                        () -> new NoSuchElementException("No specification provider found for key: "
+                        () -> new SpecificationNotFoundException(
+                                "No specification provider found for key: "
                                 + key));
     }
 }
