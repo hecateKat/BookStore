@@ -1,6 +1,6 @@
 package com.kat.bookstore.repository.book;
 
-import com.kat.bookstore.dto.BookSearchParametersDto;
+import com.kat.bookstore.dto.book.BookSearchParametersDto;
 import com.kat.bookstore.entity.Book;
 import com.kat.bookstore.repository.SpecificationBuilder;
 import com.kat.bookstore.repository.SpecificationProviderManager;
