@@ -1,9 +1,9 @@
 package com.kat.bookstore.controller;
 
-import com.kat.bookstore.dto.BookDto;
-import com.kat.bookstore.dto.BookSearchParametersDto;
-import com.kat.bookstore.dto.CreateBookRequestDto;
-import com.kat.bookstore.service.BookService;
+import com.kat.bookstore.dto.book.BookDto;
+import com.kat.bookstore.dto.book.BookSearchParametersDto;
+import com.kat.bookstore.dto.book.CreateBookRequestDto;
+import com.kat.bookstore.service.book.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

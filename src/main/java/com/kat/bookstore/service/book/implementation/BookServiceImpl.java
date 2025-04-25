@@ -1,14 +1,14 @@
-package com.kat.bookstore.service.implementation;
+package com.kat.bookstore.service.book.implementation;
 
-import com.kat.bookstore.dto.BookDto;
-import com.kat.bookstore.dto.BookSearchParametersDto;
-import com.kat.bookstore.dto.CreateBookRequestDto;
+import com.kat.bookstore.dto.book.BookDto;
+import com.kat.bookstore.dto.book.BookSearchParametersDto;
+import com.kat.bookstore.dto.book.CreateBookRequestDto;
 import com.kat.bookstore.entity.Book;
 import com.kat.bookstore.exception.EntityNotFoundException;
 import com.kat.bookstore.mapper.BookMapper;
 import com.kat.bookstore.repository.book.BookRepository;
 import com.kat.bookstore.repository.book.BookSpecificationBuilder;
-import com.kat.bookstore.service.BookService;
+import com.kat.bookstore.service.book.BookService;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
