@@ -3,7 +3,7 @@ package com.kat.bookstore.service.book.implementation;
 import com.kat.bookstore.dto.book.BookDto;
 import com.kat.bookstore.dto.book.BookSearchParametersDto;
 import com.kat.bookstore.dto.book.CreateBookRequestDto;
-import com.kat.bookstore.entity.Book;
+import com.kat.bookstore.entity.book.Book;
 import com.kat.bookstore.exception.EntityNotFoundException;
 import com.kat.bookstore.mapper.BookMapper;
 import com.kat.bookstore.repository.book.BookRepository;

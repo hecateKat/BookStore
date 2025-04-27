@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert_default_book
+      author: kat
+      changes:
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: title
+                  value: 'Dune'
+              - column:
+                  name: author
+                  value: 'Frank Herbert'
+              - column:
+                  name: isbn
+                  value: '978-0441005901'
+              - column:
+                  name: price
+                  value: 59.99

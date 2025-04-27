@@ -1,0 +1,45 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert_admin
+      author: kat
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: email
+                  value: 'mlem@mlem.com'
+              - column:
+                  name: password
+                  value: '$2a$12$M6b8Bw8psq/RHZ6h7L1vdupGnZzm7T2m3Eg5wDPChGjUE5FSNbp6S'
+              - column:
+                  name: first_name
+                  value: 'Mlem'
+              - column:
+                  name: last_name
+                  value: 'Mlemsky'
+              - column:
+                  name: shipping_address
+                  value: 'Mlem Street 123'
+  - changeSet:
+      id: insert-default-user
+      author: kat
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: email
+                  value: 'meh@meh.com'
+              - column:
+                  name: password
+                  value: '$2a$12$nNjgWAW0NPxE.Y3F4YoYFeTwxsnJUIeMSZmSmjyXXZW4Pit6F4Up.'
+              - column:
+                  name: first_name
+                  value: 'Meh'
+              - column:
+                  name: last_name
+                  value: 'Mehmsky'
+              - column:
+                  name: shipping_address
+                  value: 'Meh Street 321'

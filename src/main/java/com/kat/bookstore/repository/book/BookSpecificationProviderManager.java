@@ -1,6 +1,6 @@
 package com.kat.bookstore.repository.book;
 
-import com.kat.bookstore.entity.Book;
+import com.kat.bookstore.entity.book.Book;
 import com.kat.bookstore.exception.SpecificationNotFoundException;
 import com.kat.bookstore.repository.SpecificationProvider;
 import com.kat.bookstore.repository.SpecificationProviderManager;

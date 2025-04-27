@@ -1,6 +1,6 @@
 package com.kat.bookstore.repository.book.spec;
 
-import com.kat.bookstore.entity.Book;
+import com.kat.bookstore.entity.book.Book;
 import com.kat.bookstore.repository.SpecificationProvider;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
