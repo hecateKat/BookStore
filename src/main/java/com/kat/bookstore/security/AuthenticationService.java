@@ -1,20 +1,27 @@
 package com.kat.bookstore.security;
 
 import com.kat.bookstore.dto.user.UserLoginRequestDto;
-import com.kat.bookstore.entity.user.User;
-import com.kat.bookstore.repository.user.UserRepository;
-import java.util.Optional;
+import com.kat.bookstore.dto.user.UserLoginResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
 
-    private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
+    private final AuthenticationManager authenticationManager;
 
-    public boolean isAuthenticated(UserLoginRequestDto loginRequestDto) {
-        Optional<User> user = userRepository.findByEmail((loginRequestDto.email()));
-        return user.isPresent() && user.get().getPassword().equals(loginRequestDto.password());
+    public UserLoginResponseDto isAuthenticated(UserLoginRequestDto loginRequestDto) {
+        Authentication authentication =
+                authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(
+                                loginRequestDto.email(),
+                                loginRequestDto.password()));
+        String token = jwtUtil.generateToken(authentication.getName());
+        return new UserLoginResponseDto(token);
     }
 }

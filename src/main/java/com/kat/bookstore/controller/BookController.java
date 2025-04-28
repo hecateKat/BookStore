@@ -51,6 +51,7 @@ public class BookController {
         return bookService.save(createBookRequestDto);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     @Operation(summary = "Update a book by id",
             description = "Update a book with new data by id in the database")
