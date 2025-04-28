@@ -1,6 +1,7 @@
 package com.kat.bookstore.controller;
 
 import com.kat.bookstore.dto.user.UserLoginRequestDto;
+import com.kat.bookstore.dto.user.UserLoginResponseDto;
 import com.kat.bookstore.dto.user.UserRegistrationRequestDto;
 import com.kat.bookstore.dto.user.UserResponseDto;
 import com.kat.bookstore.exception.RegistrationException;
@@ -29,7 +30,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public boolean login(@RequestBody UserLoginRequestDto loginRequestDto) {
+    public UserLoginResponseDto login(@RequestBody UserLoginRequestDto loginRequestDto) {
         return authenticationService.isAuthenticated(loginRequestDto);
     }
 }
