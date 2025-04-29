@@ -1,11 +1,12 @@
 package com.kat.bookstore.service.book.implementation;
 
 import com.kat.bookstore.dto.book.BookDto;
+import com.kat.bookstore.dto.book.BookDtoWithoutCategoryIds;
 import com.kat.bookstore.dto.book.BookSearchParametersDto;
 import com.kat.bookstore.dto.book.CreateBookRequestDto;
 import com.kat.bookstore.entity.book.Book;
 import com.kat.bookstore.exception.EntityNotFoundException;
-import com.kat.bookstore.mapper.BookMapper;
+import com.kat.bookstore.mapper.book.BookMapper;
 import com.kat.bookstore.repository.book.BookRepository;
 import com.kat.bookstore.repository.book.BookSpecificationBuilder;
 import com.kat.bookstore.service.book.BookService;
@@ -24,13 +25,6 @@ public class BookServiceImpl implements BookService {
     private final BookSpecificationBuilder bookSpecificationBuilder;
 
     @Override
-    public BookDto save(CreateBookRequestDto createBookRequestDto) {
-        Book book = bookMapper.mapToEntity(createBookRequestDto);
-        Book savedBook = bookRepository.save(book);
-        return bookMapper.mapToDto(savedBook);
-    }
-
-    @Override
     public List<BookDto> findAll(Pageable pageable) {
         return bookRepository.findAll(pageable).stream()
                 .map(bookMapper::mapToDto).collect(Collectors
@@ -41,6 +35,13 @@ public class BookServiceImpl implements BookService {
     public BookDto findById(Long id) {
         return bookRepository.findById(id).map(bookMapper::mapToDto)
                 .orElseThrow(() -> new EntityNotFoundException("Book with that id not found" + id));
+    }
+
+    @Override
+    public BookDto save(CreateBookRequestDto createBookRequestDto) {
+        Book book = bookMapper.mapToEntity(createBookRequestDto);
+        Book savedBook = bookRepository.save(book);
+        return bookMapper.mapToDto(savedBook);
     }
 
     @Override
@@ -58,6 +59,13 @@ public class BookServiceImpl implements BookService {
         Specification<Book> bookSpecification = bookSpecificationBuilder.build(searchParams);
         return bookRepository.findAll(bookSpecification).stream()
                 .map(bookMapper::mapToDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BookDtoWithoutCategoryIds> getAllByCategoryId(Long categoryId, Pageable pageable) {
+        return bookRepository.findAllByCategorySet_Id(categoryId, pageable).stream()
+                .map(bookMapper::toDtoWithoutCategories)
+                .toList();
     }
 
     @Override

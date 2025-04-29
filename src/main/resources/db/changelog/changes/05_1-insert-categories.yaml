@@ -1,0 +1,40 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-horror-category
+      author: kat
+      changes:
+        - insert:
+            tableName: categories
+            columns:
+              - column:
+                  name: name
+                  value: 'horror'
+              - column:
+                  name: description
+                  value: 'Horror books'
+  - changeSet:
+      id: insert-fantasy-category
+      author: kat
+      changes:
+        - insert:
+            tableName: categories
+            columns:
+              - column:
+                  name: name
+                  value: 'fantasy'
+              - column:
+                  name: description
+                  value: 'Fantasy books'
+  - changeSet:
+      id: insert-sf-category
+      author: kat
+      changes:
+        - insert:
+            tableName: categories
+            columns:
+              - column:
+                  name: name
+                  value: 'sf'
+              - column:
+                  name: description
+                  value: 'SF books'

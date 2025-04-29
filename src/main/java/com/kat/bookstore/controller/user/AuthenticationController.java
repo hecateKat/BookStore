@@ -1,4 +1,4 @@
-package com.kat.bookstore.controller;
+package com.kat.bookstore.controller.user;
 
 import com.kat.bookstore.dto.user.UserLoginRequestDto;
 import com.kat.bookstore.dto.user.UserLoginResponseDto;
