@@ -1,6 +1,7 @@
 package com.kat.bookstore.service.book;
 
 import com.kat.bookstore.dto.book.BookDto;
+import com.kat.bookstore.dto.book.BookDtoWithoutCategoryIds;
 import com.kat.bookstore.dto.book.BookSearchParametersDto;
 import com.kat.bookstore.dto.book.CreateBookRequestDto;
 import java.util.List;
@@ -16,6 +17,8 @@ public interface BookService {
     BookDto update(Long id, CreateBookRequestDto requestDto);
 
     List<BookDto> search(BookSearchParametersDto searchParams);
+
+    List<BookDtoWithoutCategoryIds> getAllByCategoryId(Long categoryId, Pageable pageable);
 
     void delete(Long id);
 

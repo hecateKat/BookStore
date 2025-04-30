@@ -4,7 +4,7 @@ import com.kat.bookstore.dto.user.UserRegistrationRequestDto;
 import com.kat.bookstore.dto.user.UserResponseDto;
 import com.kat.bookstore.entity.user.User;
 import com.kat.bookstore.exception.RegistrationException;
-import com.kat.bookstore.mapper.UserMapper;
+import com.kat.bookstore.mapper.user.UserMapper;
 import com.kat.bookstore.repository.user.UserRepository;
 import com.kat.bookstore.service.user.UserService;
 import lombok.RequiredArgsConstructor;

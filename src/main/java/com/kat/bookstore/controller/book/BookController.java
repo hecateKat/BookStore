@@ -1,4 +1,4 @@
-package com.kat.bookstore.controller;
+package com.kat.bookstore.controller.book;
 
 import com.kat.bookstore.dto.book.BookDto;
 import com.kat.bookstore.dto.book.BookSearchParametersDto;

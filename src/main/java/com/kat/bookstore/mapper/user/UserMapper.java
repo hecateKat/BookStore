@@ -1,4 +1,4 @@
-package com.kat.bookstore.mapper;
+package com.kat.bookstore.mapper.user;
 
 import com.kat.bookstore.config.MapperConfig;
 import com.kat.bookstore.dto.user.UserRegistrationRequestDto;
