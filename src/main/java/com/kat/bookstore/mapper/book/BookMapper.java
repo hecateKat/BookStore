@@ -16,14 +16,12 @@ import org.mapstruct.MappingTarget;
 public interface BookMapper {
     Book mapToEntity(CreateBookRequestDto requestDto);
 
-    Book updateBookFromDto(@MappingTarget Book book, CreateBookRequestDto requestDto);
-
     BookDto mapToDto(Book book);
 
     BookDtoWithoutCategoryIds toDtoWithoutCategories(Book book);
 
     @AfterMapping
-    default void setCategories(@MappingTarget Book book, CreateBookRequestDto requestDto) {
+    default void setCategorySet(@MappingTarget Book book, CreateBookRequestDto requestDto) {
         if (requestDto.categoryIds() == null) {
             book.setCategorySet(Set.of());
             return;
