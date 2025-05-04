@@ -10,6 +10,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -18,15 +20,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @AllArgsConstructor
 @Data
 @NoArgsConstructor
-@SQLDelete(sql = "UPDATE books SET is_deleted = true WHERE id = ?")
-@Where(clause = "is_deleted = false")
+@SQLDelete(sql = "UPDATE books SET is_deleted = TRUE WHERE id = ?")
+@SQLRestriction("is_deleted = FALSE")
 @Table(name = "books")
+@NamedEntityGraph(name = "Book.categorySet",
+        attributeNodes = @NamedAttributeNode("categorySet"))
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,11 +41,15 @@ public class Book {
     private BigDecimal price;
     private String description;
     private String coverImage;
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "books_categories",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
     private Set<Category> categorySet = new HashSet<>();
     @Column(nullable = false)
     private boolean isDeleted = false;
+
+    public Book(Long bookId) {
+        this.id = bookId;
+    }
 }
