@@ -25,3 +25,7 @@ databaseChangeLog:
       file: db/changelog/changes/10-insert-default-user.yaml
   - include:
       file: db/changelog/changes/11-insert-in-table-shopcarts.yaml
+  - include:
+      file: db/changelog/changes/12-create-table-orders.yaml
+  - include:
+      file: db/changelog/changes/13-create-table-order_items.yaml
