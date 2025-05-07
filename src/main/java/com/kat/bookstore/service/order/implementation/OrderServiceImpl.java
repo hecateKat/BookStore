@@ -16,6 +16,7 @@ import com.kat.bookstore.service.cartitem.CartItemService;
 import com.kat.bookstore.service.order.OrderItemService;
 import com.kat.bookstore.service.order.OrderService;
 import com.kat.bookstore.service.shoppingcart.ShoppingCartService;
+import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -35,6 +36,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderItemService orderItemService;
     private final ShoppingCartService shoppingCartService;
 
+    @Transactional
     @Override
     public OrderDto save(CreateOrderRequestDto requestDto, User user) {
         Order order = orderMapper.toEntity(requestDto);
@@ -68,9 +70,10 @@ public class OrderServiceImpl implements OrderService {
 
     private BigDecimal getTotalAmount(Long userId) {
         return shoppingCartService.getShoppingCart(userId).getCartItems().stream()
-                .map(item -> item.getBook().getPrice()
+                .map(item -> item.getBook()
+                        .getPrice()
                         .multiply(BigDecimal.valueOf(item.getQuantity())))
-                .reduce(BigDecimal::add).get();
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     private void clearShoppingCart(Set<CartItem> cartItemSet, Long userId) {

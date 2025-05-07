@@ -31,7 +31,7 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     @Override
     public List<OrderItemDto> getAllByOrderId(Long orderId, Pageable pageable, Long userId) {
-        return orderItemRepository.findAllByOrder_User_IdAndOrder_Id(orderId, userId, pageable)
+        return orderItemRepository.findAllByOrder_User_IdAndOrder_Id(userId, orderId, pageable)
                 .stream()
                 .map(orderItemMapper::toDto)
                 .toList();
