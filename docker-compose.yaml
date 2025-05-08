@@ -23,7 +23,9 @@ services:
       - mysqldb
     restart: no
     image: kat-book-store:1.0
-    build: .
+    build:
+        context: .
+        dockerfile: Dockerfile
     env_file: ./.env
     ports:
       - ${SPRING_LOCAL_PORT}:${SPRING_DOCKER_PORT}
