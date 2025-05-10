@@ -11,7 +11,7 @@ databaseChangeLog:
                   value: 'mlem@mlem.com'
               - column:
                   name: password
-                  value: '$2a$12$M6b8Bw8psq/RHZ6h7L1vdupGnZzm7T2m3Eg5wDPChGjUE5FSNbp6S'
+                  value: '$2a$12$gW.xk.Fzbm5V0ai8dkXIs.CvnECMVkS6TpZickTVy2mey7Zx//69C'
               - column:
                   name: first_name
                   value: 'Mlem'
