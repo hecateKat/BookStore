@@ -70,13 +70,34 @@ class BookControllerTest {
         }
     }
 
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN, ROLE"})
+    public void test_should_return_true_when_getAll() throws Exception {
+        //given
+        List<BookDto> expected = getAllBooksDto();
+
+        //when
+        MvcResult result = mockMvc.perform(get("/books")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        //then
+        BookDto[] actual = objectMapper.readValue(
+                result.getResponse().getContentAsString(), BookDto[].class);
+        Assertions.assertEquals(expected.size(), actual.length);
+        for (int i = 0; i < expected.size(); i++) {
+            Assertions.assertTrue(EqualsBuilder.reflectionEquals(expected.get(i), actual[i]));
+        }
+    }
+
     @AfterAll
     public static void afterAll(@Autowired DataSource dataSource) {
         teardown(dataSource);
     }
 
     @Test
-    @WithMockUser(username = "somebody", roles = {"ADMIN, ROLE"})
+    @WithMockUser(username = "admin", roles = {"ADMIN, ROLE"})
     public void test_should_return_true_when_use_getBookById_with_valid_Id() throws Exception {
         //given
         Long bookId = 1L;
@@ -84,7 +105,7 @@ class BookControllerTest {
         //when
         MvcResult result = mockMvc.perform(get("/books/{id}", bookId)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful())
+                .andExpect(status().isOk())
                 .andReturn();
 
         //then
@@ -95,10 +116,10 @@ class BookControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "somebody", roles = {"ADMIN, ROLE"})
+    @WithMockUser(username = "admin", roles = {"ADMIN, ROLE"})
     public void test_should_throw_Exception_when_using_getBookById_with_nonexisting_Id() throws Exception {
         //given
-        Long bookId = 40L;
+        Long bookId = 400L;
 
         //when
         try {
@@ -119,7 +140,32 @@ class BookControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "somebody", roles = {"ADMIN, ROLE"})
+    @WithMockUser(username = "admin", roles = {"ADMIN, ROLE"})
+    public void test_should_return_true_when_saveBook_with_valid_requestDto() throws Exception {
+        //given
+        CreateBookRequestDto requestDto = new CreateBookRequestDto("New Book", "New Author",
+                "123-456-789-0", BigDecimal.valueOf(99.99), Set.of(),
+                "New description", "new cover image");
+        BookDto expected = new BookDto(null, requestDto.title(), requestDto.author(),
+                requestDto.price(), requestDto.isbn(), requestDto.categoryIds(),
+                requestDto.description(), requestDto.coverImage());
+
+        //when
+        MvcResult result = mockMvc.perform(put("/books")
+                        .content(objectMapper.writeValueAsString(requestDto))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+
+        //then
+        BookDto actual = objectMapper.readValue(
+                result.getResponse().getContentAsString(), BookDto.class);
+        Assertions.assertNotNull(actual);
+        Assertions.assertTrue(EqualsBuilder.reflectionEquals(expected, actual));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN, ROLE"})
     public void test_should_return_true_when_search_with_valid_parameters() throws Exception {
         // given
         String title = "First";
@@ -157,33 +203,12 @@ class BookControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "somebody", roles = {"ADMIN, ROLE"})
-    public void test_should_return_true_when_getAll() throws Exception {
-        //given
-        List<BookDto> expected = getAllBooksDto();
-
-        //when
-        MvcResult result = mockMvc.perform(get("/books")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn();
-
-        //then
-        BookDto[] actual = objectMapper.readValue(
-                result.getResponse().getContentAsString(), BookDto[].class);
-        Assertions.assertEquals(expected.size(), actual.length);
-        for (int i = 0; i < expected.size(); i++) {
-            Assertions.assertTrue(EqualsBuilder.reflectionEquals(expected.get(i), actual[i]));
-        }
-    }
-
-    @Test
     @Sql(scripts = "classpath:book/controller/add-book-for-update.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = "classpath:book/controller/remove-updated-book.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    public void test_should_return_true_when_updateBookById_with_valid_requestDto() throws Exception {
+    public void test_should_return_true_when_updateBookById_with_valid_id_and_requestDto() throws Exception {
         //given
         Long bookId = 4L;
         CreateBookRequestDto requestDto = new CreateBookRequestDto("Update title", "Update author",
@@ -197,7 +222,7 @@ class BookControllerTest {
         MvcResult result = mockMvc.perform(put("/books/{id}", bookId)
                         .content(objectMapper.writeValueAsString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful())
+                .andExpect(status().isOk())
                 .andReturn();
 
         //then
