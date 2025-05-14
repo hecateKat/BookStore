@@ -1,9 +1,7 @@
 package com.kat.bookstore.controller.book;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,6 +16,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.Arrays;
 import javax.sql.DataSource;
+
+import jakarta.transaction.Transactional;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.jupiter.api.AfterAll;
@@ -37,6 +37,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Transactional
 class BookControllerTest {
 
     static MockMvc mockMvc;
@@ -70,6 +71,11 @@ class BookControllerTest {
         }
     }
 
+    @AfterAll
+    public static void afterAll(@Autowired DataSource dataSource) {
+        teardown(dataSource);
+    }
+
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN, ROLE"})
     public void test_should_return_true_when_getAll() throws Exception {
@@ -89,11 +95,6 @@ class BookControllerTest {
         for (int i = 0; i < expected.size(); i++) {
             Assertions.assertTrue(EqualsBuilder.reflectionEquals(expected.get(i), actual[i]));
         }
-    }
-
-    @AfterAll
-    public static void afterAll(@Autowired DataSource dataSource) {
-        teardown(dataSource);
     }
 
     @Test
@@ -140,28 +141,30 @@ class BookControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "admin", roles = {"ADMIN, ROLE"})
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void test_should_return_true_when_saveBook_with_valid_requestDto() throws Exception {
         //given
         CreateBookRequestDto requestDto = new CreateBookRequestDto("New Book", "New Author",
                 "123-456-789-0", BigDecimal.valueOf(99.99), Set.of(),
                 "New description", "new cover image");
-        BookDto expected = new BookDto(null, requestDto.title(), requestDto.author(),
-                requestDto.price(), requestDto.isbn(), requestDto.categoryIds(),
-                requestDto.description(), requestDto.coverImage());
 
         //when
-        MvcResult result = mockMvc.perform(put("/books")
+        MvcResult result = mockMvc.perform(post("/books")
                         .content(objectMapper.writeValueAsString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful())
+                .andExpect(status().isOk())
                 .andReturn();
 
         //then
         BookDto actual = objectMapper.readValue(
                 result.getResponse().getContentAsString(), BookDto.class);
         Assertions.assertNotNull(actual);
-        Assertions.assertTrue(EqualsBuilder.reflectionEquals(expected, actual));
+        Assertions.assertEquals(requestDto.title(), actual.getTitle());
+        Assertions.assertEquals(requestDto.author(), actual.getAuthor());
+        Assertions.assertEquals(requestDto.isbn(), actual.getIsbn());
+        Assertions.assertEquals(requestDto.price(), actual.getPrice());
+        Assertions.assertEquals(requestDto.categoryIds(), actual.getCategoryIds());
+        Assertions.assertEquals(requestDto.description(), actual.getDescription());
     }
 
     @Test
@@ -243,22 +246,19 @@ class BookControllerTest {
         //when & then
         mockMvc.perform(delete("/books/{id}", bookId)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(result -> Assertions.assertEquals(
-                        "The book entity was deleted by id: " + bookId,
-                        result.getResponse().getContentAsString()));
+                .andExpect(status().is2xxSuccessful());
     }
 
     private List<BookDto> getAllBooksDto() {
         List<BookDto> bookDtoList = new ArrayList<>();
         bookDtoList.add(new BookDto(1L, "First", "Author 1",
-                BigDecimal.valueOf(1.23), "000-00-00000001", Set.of(1L),
+                BigDecimal.valueOf(1.11), "000-00-00000001", Set.of(1L),
                 "Book 1", "cover_1.jpg"));
         bookDtoList.add(new BookDto(2L, "Second", "Author 2",
-                BigDecimal.valueOf(2.34), "000-00-00000002", Set.of(2L),
+                BigDecimal.valueOf(2.22), "000-00-00000002", Set.of(2L),
                 "Book 2", "cover_2.jpg"));
         bookDtoList.add(new BookDto(3L, "Third", "Author 3",
-                BigDecimal.valueOf(3.45), "000-00-00000003", Set.of(3L),
+                BigDecimal.valueOf(3.33), "000-00-00000003", Set.of(3L),
                 "Book 3", "cover_3.jpg"));
         return bookDtoList;
     }

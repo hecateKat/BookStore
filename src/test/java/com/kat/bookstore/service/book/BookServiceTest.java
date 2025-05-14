@@ -40,7 +40,7 @@ class BookServiceTest {
     public void test_should_return_true_when_find_Book_by_Id_with_valid_Id_and_return_BookDto() {
         //given
         Long bookId = 1L;
-        Book book = new Book(bookId);
+        Book book = new Book();
         book.setTitle("test book");
         book.setAuthor("test author");
         book.setPrice(BigDecimal.valueOf(1.99));
@@ -89,7 +89,7 @@ class BookServiceTest {
     @Test
     public void test_should_return_true_when_findAll_BookDto_with_valid_Pageable() {
         //given
-        Book book1 = new Book(1L);
+        Book book1 = new Book();
         book1.setTitle("test book");
         book1.setAuthor("test author");
         book1.setPrice(BigDecimal.valueOf(1.11));
@@ -98,7 +98,7 @@ class BookServiceTest {
         book1.setCoverImage("test image");
         book1.setCategorySet(Set.of(new Category(1L)));
 
-        Book book2 = new Book(2L);
+        Book book2 = new Book();
         book2.setTitle("test book 2");
         book2.setAuthor("test author 2");
         book2.setPrice(BigDecimal.valueOf(2.22));
@@ -150,7 +150,7 @@ class BookServiceTest {
     public void test_should_return_true_when_getAllByCategoryId_with_valid_CategoryId() {
         //given
         Long categoryId = 1L;
-        Book book1 = new Book(1L);
+        Book book1 = new Book();
         book1.setTitle("test title");
         book1.setAuthor("test author");
         book1.setPrice(BigDecimal.valueOf(1.11));
@@ -159,7 +159,7 @@ class BookServiceTest {
         book1.setCoverImage("test image");
         book1.setCategorySet(Set.of(new Category(categoryId)));
 
-        Book book2 = new Book(2L);
+        Book book2 = new Book();
         book2.setTitle("test title 2");
         book2.setAuthor("test author 2");
         book2.setPrice(BigDecimal.valueOf(2.22));

@@ -20,4 +20,5 @@ public class BookDto {
     private Set<Long> categoryIds;
     private String description;
     private String coverImage;
+
 }
