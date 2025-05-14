@@ -14,21 +14,25 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(config = MapperConfig.class)
 public interface BookMapper {
+
     Book mapToEntity(CreateBookRequestDto requestDto);
 
     BookDto mapToDto(Book book);
 
     BookDtoWithoutCategoryIds toDtoWithoutCategories(Book book);
 
+    default Set<Category> mapCategoryIdsToCategorySet(Set<Long> categoryIds) {
+        if (categoryIds == null || categoryIds.isEmpty()) {
+            return Set.of();
+        }
+        return categoryIds.stream()
+                .map(Category::new)
+                .collect(Collectors.toSet());
+    }
+
     @AfterMapping
     default void setCategorySet(@MappingTarget Book book, CreateBookRequestDto requestDto) {
-        if (requestDto.categoryIds() == null) {
-            book.setCategorySet(Set.of());
-            return;
-        }
-        book.setCategorySet(requestDto.categoryIds().stream()
-                .map(Category::new)
-                .collect(Collectors.toSet()));
+        book.setCategorySet(mapCategoryIdsToCategorySet(requestDto.categoryIds()));
     }
 
     @AfterMapping

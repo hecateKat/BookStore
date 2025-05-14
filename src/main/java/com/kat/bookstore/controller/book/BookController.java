@@ -45,7 +45,7 @@ public class BookController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
-    @Operation(summary = "Save a book by id",
+    @Operation(summary = "Save a book by request",
             description = "Save a book entity in the database")
     public BookDto save(@RequestBody @Valid CreateBookRequestDto createBookRequestDto) {
         return bookService.save(createBookRequestDto);
