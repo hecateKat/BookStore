@@ -93,7 +93,7 @@ public class BookRepositoryTest {
     @Test
     public void test_should_return_true_when_findAllByCategorySet_Id_expects_empty() {
         //given
-        Page<Book> expected = bookRepository.findAllByCategorySet_Id(2L, PageRequest.of(0, 10));
+        Page<Book> expected = bookRepository.findAllByCategorySet_Id(999L, PageRequest.of(0, 10));
 
         //then
         Assertions.assertTrue(expected.isEmpty());

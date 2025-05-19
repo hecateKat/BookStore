@@ -2,6 +2,8 @@ package com.kat.bookstore.service.book;
 
 import com.kat.bookstore.dto.book.BookDto;
 import com.kat.bookstore.dto.book.BookDtoWithoutCategoryIds;
+import com.kat.bookstore.dto.book.BookSearchParametersDto;
+import com.kat.bookstore.repository.book.BookSpecificationBuilder;
 import com.kat.bookstore.dto.book.CreateBookRequestDto;
 import com.kat.bookstore.entity.book.Book;
 import com.kat.bookstore.entity.category.Category;
@@ -25,14 +27,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 
 @ExtendWith(MockitoExtension.class)
 class BookServiceTest {
 
     @Mock
-    private BookRepository bookRepo;
+    private BookRepository bookRepository;
     @Mock
     private BookMapper bookMapper;
+    @Mock
+    private BookSpecificationBuilder bookSpecificationBuilder;
     @InjectMocks
     private BookServiceImpl bookService;
 
@@ -48,7 +53,7 @@ class BookServiceTest {
         book.setDescription("test description");
         book.setCoverImage("test image");
         book.setCategorySet(Set.of(new Category(1L), new Category(11L)));
-        Mockito.when(bookRepo.findById(bookId)).thenReturn(Optional.of(book));
+        Mockito.when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
 
         BookDto expected = new BookDto();
         expected.setId(book.getId());
@@ -74,7 +79,7 @@ class BookServiceTest {
     public void test_should_throw_exception_when_findById_gets_invalid_Id() {
         //given
         Long bookId = -1L;
-        Mockito.when(bookRepo.findById(bookId)).thenReturn(Optional.empty());
+        Mockito.when(bookRepository.findById(bookId)).thenReturn(Optional.empty());
 
         //when
         Exception exception = Assertions.assertThrows(EntityNotFoundException.class,
@@ -84,66 +89,6 @@ class BookServiceTest {
         String expected = String.format("Book with that id not found" + bookId);
         String actual = exception.getMessage();
         Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
-    public void test_should_return_true_when_findAll_BookDto_with_valid_Pageable() {
-        //given
-        Book book1 = new Book();
-        book1.setTitle("test book");
-        book1.setAuthor("test author");
-        book1.setPrice(BigDecimal.valueOf(1.11));
-        book1.setIsbn("111-00-00000000");
-        book1.setDescription("test description");
-        book1.setCoverImage("test image");
-        book1.setCategorySet(Set.of(new Category(1L)));
-
-        Book book2 = new Book();
-        book2.setTitle("test book 2");
-        book2.setAuthor("test author 2");
-        book2.setPrice(BigDecimal.valueOf(2.22));
-        book2.setIsbn("222-00-00000000");
-        book2.setCategorySet(Set.of());
-
-        BookDto bookDto1 = new BookDto();
-        bookDto1.setId(book1.getId());
-        bookDto1.setTitle(book1.getTitle());
-        bookDto1.setAuthor(book1.getAuthor());
-        bookDto1.setPrice(book1.getPrice());
-        bookDto1.setIsbn(book1.getIsbn());
-        bookDto1.setDescription(book1.getDescription());
-        bookDto1.setCoverImage(book1.getCoverImage());
-        bookDto1.setCategoryIds(book1.getCategorySet().stream()
-                .map(Category::getId)
-                .collect(Collectors.toSet()));
-        BookDto bookDto2 = new BookDto();
-        bookDto2.setId(book2.getId());
-        bookDto2.setTitle(book2.getTitle());
-        bookDto2.setAuthor(book2.getAuthor());
-        bookDto2.setPrice(book2.getPrice());
-        bookDto2.setIsbn(book2.getIsbn());
-        bookDto2.setDescription(book2.getDescription());
-        bookDto2.setCoverImage(book2.getCoverImage());
-        bookDto2.setCategoryIds(book2.getCategorySet().stream()
-                .map(Category::getId)
-                .collect(Collectors.toSet()));
-
-        List<Book> bookList = List.of(book1, book2);
-        PageRequest pageable = PageRequest.of(0, 10);
-        Page<Book> bookPage = new PageImpl<>(bookList, pageable, bookList.size());
-        Mockito.when(bookRepo.findAll(pageable)).thenReturn(bookPage);
-        Mockito.when(bookMapper.mapToDto(book1)).thenReturn(bookDto1);
-        Mockito.when(bookMapper.mapToDto(book2)).thenReturn(bookDto2);
-
-        //when
-        List<BookDto> expected = List.of(bookDto1, bookDto2);
-        List<BookDto> actual = bookService.findAll(pageable);
-
-        //then
-        for (int i = 0; i < expected.size(); i++) {
-            Assertions.assertTrue(
-                    EqualsBuilder.reflectionEquals(expected.get(i), actual.get(i)));
-        }
     }
 
     @Test
@@ -175,7 +120,7 @@ class BookServiceTest {
 
         PageRequest pageable = PageRequest.of(0, 10);
         Page<Book> bookList = new PageImpl<>(List.of(book1, book2), pageable, 2);
-        Mockito.when(bookRepo.findAllByCategorySet_Id(categoryId, pageable)).thenReturn(bookList);
+        Mockito.when(bookRepository.findAllByCategorySet_Id(categoryId, pageable)).thenReturn(bookList);
         Mockito.when(bookMapper.toDtoWithoutCategories(book1)).thenReturn(bookDtoWithout1);
         Mockito.when(bookMapper.toDtoWithoutCategories(book2)).thenReturn(bookDtoWithout2);
 
@@ -220,11 +165,53 @@ class BookServiceTest {
                 .collect(Collectors.toSet()));
 
         Mockito.when(bookMapper.mapToEntity(requestDto)).thenReturn(book);
-        Mockito.when(bookRepo.save(book)).thenReturn(book);
+        Mockito.when(bookRepository.save(book)).thenReturn(book);
         Mockito.when(bookMapper.mapToDto(book)).thenReturn(expected);
 
         //when
         BookDto actual = bookService.save(requestDto);
+
+        //then
+        Assertions.assertTrue(EqualsBuilder.reflectionEquals(expected, actual));
+    }
+
+    @Test
+    public void test_should_return_true_when_update_with_valid_Id() {
+        //given
+        Long bookId = 1L;
+        CreateBookRequestDto requestDto = new CreateBookRequestDto("Update title", "Update author",
+                "000-00-12345678", BigDecimal.valueOf(9.99), Set.of(1L, 2L),
+                "Update description", "Update cover image");
+        Book book = new Book();
+        book.setId(bookId);
+        book.setTitle(requestDto.title());
+        book.setAuthor(requestDto.author());
+        book.setIsbn(requestDto.isbn());
+        book.setPrice(requestDto.price());
+        book.setDescription(requestDto.description());
+        book.setCoverImage(requestDto.coverImage());
+        book.setCategorySet(requestDto.categoryIds().stream()
+                .map(Category::new)
+                .collect(Collectors.toSet()));
+        BookDto expected = new BookDto();
+        expected.setId(book.getId());
+        expected.setTitle(book.getTitle());
+        expected.setAuthor(book.getAuthor());
+        expected.setPrice(book.getPrice());
+        expected.setIsbn(book.getIsbn());
+        expected.setDescription(book.getDescription());
+        expected.setCoverImage(book.getCoverImage());
+        expected.setCategoryIds(book.getCategorySet().stream()
+                .map(Category::getId)
+                .collect(Collectors.toSet()));
+
+        Mockito.when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
+        Mockito.when(bookMapper.mapToEntity(requestDto)).thenReturn(book);
+        Mockito.when(bookRepository.save(book)).thenReturn(book);
+        Mockito.when(bookMapper.mapToDto(book)).thenReturn(expected);
+
+        //when
+        BookDto actual = bookService.update(bookId, requestDto);
 
         //then
         Assertions.assertTrue(EqualsBuilder.reflectionEquals(expected, actual));
@@ -237,7 +224,7 @@ class BookServiceTest {
         CreateBookRequestDto requestDto = new CreateBookRequestDto("Update title", "Update author",
                 "000-00-12345678", BigDecimal.valueOf(9.99), Set.of(1L, 2L),
                 "Update description", "Update cover image");
-        Mockito.when(bookRepo.findById(bookId)).thenReturn(Optional.empty());
+        Mockito.when(bookRepository.findById(bookId)).thenReturn(Optional.empty());
 
         //when
         Exception exception = Assertions.assertThrows(EntityNotFoundException.class,
@@ -247,5 +234,49 @@ class BookServiceTest {
         String expected = "Book with that id not found" + bookId;
         String actual = exception.getMessage();
         Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void test_should_return_true_when_search_with_valid_Parameters() {
+        // given
+        BookSearchParametersDto searchParams = new BookSearchParametersDto(
+                new String[]{"test title"},
+                new String[]{"test author"},
+                new String[]{"000-00-00000000"}
+        );
+
+        Book book = new Book();
+        book.setTitle(searchParams.title()[0]);
+        book.setAuthor(searchParams.author()[0]);
+        book.setIsbn(searchParams.isbn()[0]);
+        book.setPrice(BigDecimal.valueOf(1.11));
+        book.setCategorySet(Set.of(new Category(1L), new Category(2L)));
+        List<Book> bookList = List.of(book);
+
+        Specification<Book> specification = Mockito.mock(Specification.class);
+        Mockito.lenient().when(bookSpecificationBuilder.build(searchParams)).thenReturn(specification);
+        Mockito.lenient().when(bookRepository.findAll(specification)).thenReturn(bookList);
+        BookDto bookDto = new BookDto();
+        Mockito.lenient().when(bookMapper.mapToDto(book)).thenReturn(bookDto);
+
+        // when
+        List<BookDto> actual = bookService.search(searchParams);
+
+        // then
+        Assertions.assertEquals(1, actual.size());
+    }
+
+    @Test
+    public void test_should_return_true_when_delete_with_valid_Id() {
+        //given
+        Long bookId = 1L;
+        Book book = new Book();
+        book.setId(bookId);
+
+        //when
+        bookService.delete(bookId);
+
+        //then
+        Mockito.verify(bookRepository, Mockito.times(1)).deleteById(bookId);
     }
 }
