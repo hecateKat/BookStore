@@ -42,6 +42,66 @@ class BookServiceTest {
     private BookServiceImpl bookService;
 
     @Test
+    public void test_should_return_true_when_findAll_BookDto_with_valid_Pageable() {
+        //given
+        Book book1 = new Book();
+        book1.setTitle("test book");
+        book1.setAuthor("test author");
+        book1.setPrice(BigDecimal.valueOf(1.11));
+        book1.setIsbn("111-00-00000000");
+        book1.setDescription("test description");
+        book1.setCoverImage("test image");
+        book1.setCategorySet(Set.of(new Category(1L)));
+
+        Book book2 = new Book();
+        book2.setTitle("test book 2");
+        book2.setAuthor("test author 2");
+        book2.setPrice(BigDecimal.valueOf(2.22));
+        book2.setIsbn("222-00-00000000");
+        book2.setCategorySet(Set.of());
+
+        BookDto bookDto1 = new BookDto();
+        bookDto1.setId(book1.getId());
+        bookDto1.setTitle(book1.getTitle());
+        bookDto1.setAuthor(book1.getAuthor());
+        bookDto1.setPrice(book1.getPrice());
+        bookDto1.setIsbn(book1.getIsbn());
+        bookDto1.setDescription(book1.getDescription());
+        bookDto1.setCoverImage(book1.getCoverImage());
+        bookDto1.setCategoryIds(book1.getCategorySet().stream()
+                .map(Category::getId)
+                .collect(Collectors.toSet()));
+        BookDto bookDto2 = new BookDto();
+        bookDto2.setId(book2.getId());
+        bookDto2.setTitle(book2.getTitle());
+        bookDto2.setAuthor(book2.getAuthor());
+        bookDto2.setPrice(book2.getPrice());
+        bookDto2.setIsbn(book2.getIsbn());
+        bookDto2.setDescription(book2.getDescription());
+        bookDto2.setCoverImage(book2.getCoverImage());
+        bookDto2.setCategoryIds(book2.getCategorySet().stream()
+                .map(Category::getId)
+                .collect(Collectors.toSet()));
+
+        List<Book> bookList = List.of(book1, book2);
+        PageRequest pageable = PageRequest.of(0, 10);
+        Page<Book> bookPage = new PageImpl<>(bookList, pageable, bookList.size());
+        Mockito.when(bookRepository.findAll(pageable)).thenReturn(bookPage);
+        Mockito.when(bookMapper.mapToDto(book1)).thenReturn(bookDto1);
+        Mockito.when(bookMapper.mapToDto(book2)).thenReturn(bookDto2);
+
+        //when
+        List<BookDto> expected = List.of(bookDto1, bookDto2);
+        List<BookDto> actual = bookService.findAll(pageable);
+
+        //then
+        for (int i = 0; i < expected.size(); i++) {
+            Assertions.assertTrue(
+                    EqualsBuilder.reflectionEquals(expected.get(i), actual.get(i)));
+        }
+    }
+
+    @Test
     public void test_should_return_true_when_find_Book_by_Id_with_valid_Id_and_return_BookDto() {
         //given
         Long bookId = 1L;
