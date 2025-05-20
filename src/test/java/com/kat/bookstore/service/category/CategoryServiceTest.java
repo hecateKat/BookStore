@@ -144,7 +144,7 @@ class CategoryServiceTest {
     }
 
     @Test
-    public void test_should_not_update_Book_with_invalid_Id_and_throw_Exception() {
+    public void test_should_not_update_category_with_invalid_Id_and_throw_Exception() {
         //given
         Long categoryId = 4L;
         CreateCategoryRequestDto requestDto = new CreateCategoryRequestDto(
