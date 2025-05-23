@@ -29,15 +29,16 @@ public class CartItemServiceImpl implements CartItemService {
     public CartItemDto save(
             CreateCartItemRequestDto createCartItemRequestDto,
             ShoppingCart shoppingCart) {
-        CartItem cartItem = cartItemMapper.toEntity(createCartItemRequestDto);
-        Book bookFromDB = bookRepository.findById(cartItem.getBook().getId()).orElseThrow(() ->
-                new EntityNotFoundException(
+        Book bookFromDB = bookRepository.findById(createCartItemRequestDto.bookId())
+                .orElseThrow(() -> new EntityNotFoundException(
                         "Can't find book by id=" + createCartItemRequestDto.bookId()));
+        CartItem cartItem = cartItemMapper.toEntity(createCartItemRequestDto);
         cartItem.setBook(bookFromDB);
         cartItem.setShoppingCart(shoppingCart);
         CartItem savedCartItem = cartItemRepository.save(cartItem);
         shoppingCart.setCartItems(
-                cartItemRepository.findAllByShoppingCart_Id(shoppingCart.getId()));
+                cartItemRepository.findAllByShoppingCart_Id(
+                        shoppingCart.getId()));
         return cartItemMapper.toDto(savedCartItem);
     }
 
