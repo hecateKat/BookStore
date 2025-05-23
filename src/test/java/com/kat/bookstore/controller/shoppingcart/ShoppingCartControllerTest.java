@@ -175,12 +175,20 @@ class ShoppingCartControllerTest {
         Long cartItemId = 100L;
         CartItemQuantityRequestDto requestDto = new CartItemQuantityRequestDto(100);
 
-        //when & then
-        mockMvc.perform(put("/cart/cart-items/{id}", cartItemId)
-                        .content(objectMapper.writeValueAsString(requestDto))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-                .andExpect(result -> assertInstanceOf(EntityNotFoundException.class, result.getResolvedException()));
+        //when
+        try {
+            mockMvc.perform(put("/cart/cart-items/{id}", cartItemId)
+                            .content(objectMapper.writeValueAsString(requestDto))
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNotFound());
+            fail("Expected EntityNotFoundException to be thrown");
+        } catch (Exception ex) {
+            //then
+            Throwable cause = ex.getCause();
+            assertNotNull(cause);
+            assertTrue(cause instanceof EntityNotFoundException);
+            assertEquals("Can't find cartItem by id = " + cartItemId + " for this user", cause.getMessage());
+        }
     }
 
     @Test
