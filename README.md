@@ -48,14 +48,17 @@ In order to run the application in a Docker container please execute the command
 ## Endpoints
 
 ### Book Endpoints
-![img_3.png](img_3.png)
+![img_2.png](img_2.png)
 
 ### Category Endpoints
+![img_3.png](img_3.png)
+
+### Order Endpoints
 ![img_4.png](img_4.png)
 
 ### ShoppingCart Endpoints
-![img_2.png](img_2.png)
+![img_5.png](img_5.png)
 
 ### User Endpoints (Authentication)
-![img_5.png](img_5.png)
+![img_6.png](img_6.png)
 
