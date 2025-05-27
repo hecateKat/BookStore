@@ -14,7 +14,7 @@ This is a simple BookStore application built using Spring Boot, Spring Security,
 Project used as a reference for learning Spring Boot and Spring Security concepts.
 Web infrastructure is built using Spring MVC, and the application is secured with Spring Security.
 Objects are persisted in a MySQL database, and the application is packaged as a Docker image for easy deployment.
-Database was based on Liquidbase, which is a database schema change management tool.
+Database schema management is handled by Liquibase.
 
 ## Technology
 
@@ -41,7 +41,20 @@ Database was based on Liquidbase, which is a database schema change management t
 
 ## Docker
 
-In order to run the application in a Docker container please execute the command "docker compose up" in the root directory of the project.
+In order to run the application in a Docker container please execute the command `docker compose up` in the root directory of the project.
+Prerequisites: Java version, Maven, Docker Compose, environment variables (e.g. DB_URL, DB_USER, DB_PASS).
+The application will be available at `http://localhost:8080` and the Swagger UI at `http://localhost:8080/swagger-ui/index.html`.
+
+Local run (without Docker):
+```bash
+mvn clean package
+java -jar target/bookstore-app.jar
+```
+
+Running tests:
+```bash
+mvn test
+```
 
 ![img_1.png](img_1.png)
 
